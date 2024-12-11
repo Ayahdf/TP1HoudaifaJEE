@@ -6,6 +6,8 @@ import jakarta.faces.model.SelectItem;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import ma.emsi.houdaifa.tp1houdaifa.llm.JsonUtilPourGemini;
+import ma.emsi.houdaifa.tp1houdaifa.llm.LlmInteraction;
 
 import java.io.Serializable;
 import java.util.*;
@@ -21,8 +23,9 @@ public class chatBeanHoudaifa implements Serializable {
     private StringBuilder conversation = new StringBuilder();
     private String texteRequeteJson;
     private String texteReponseJson;
-    private Boolean debug;
-
+    private boolean debug;
+    @Inject
+    private JsonUtilPourGemini jsonUtil;
     @Inject
     private FacesContext facesContext;
 
@@ -81,7 +84,7 @@ public class chatBeanHoudaifa implements Serializable {
         this.texteReponseJson = texteReponseJson;
     }
 
-    public Boolean isDebug() {
+    public boolean isDebug() {
         return debug;
     }
 
@@ -98,18 +101,26 @@ public class chatBeanHoudaifa implements Serializable {
             FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
                     "Texte question vide", "Il manque le texte de la question");
             facesContext.addMessage(null, message);
+
             return null;
         }
 
-        // Traitement personnel : Transformations ludiques de texte
-        this.reponse = genererReponseTransformee(question);
+        try {
+            // Appel à l'API via JsonUtil
+            LlmInteraction interaction = jsonUtil.envoyerRequete(question);
+            this.reponse = interaction.reponseExtraite();
+            this.texteRequeteJson = interaction.questionJson();
+            this.texteReponseJson = interaction.reponseJson();
 
-        if (this.conversation.isEmpty()) {
-            this.reponse = "🎲 Mode de transformation : " + systemRole.toUpperCase(Locale.FRENCH) + "\n" + this.reponse;
-            this.systemRoleChangeable = false;
+            // Ajout de la réponse à la conversation
+            afficherConversation();
+
+        } catch (Exception e) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                    "Problème de connexion avec l'API du LLM",
+                    "Problème de connexion avec l'API du LLM : " + e.getMessage());
+            facesContext.addMessage(null, message);
         }
-
-        afficherConversation();
         return null;
     }
 
