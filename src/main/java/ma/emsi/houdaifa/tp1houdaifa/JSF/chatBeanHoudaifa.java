@@ -12,18 +12,21 @@ import java.util.*;
 
 @Named
 @ViewScoped
-public class ChatBeanHoudaifa implements Serializable {
+public class chatBeanHoudaifa implements Serializable {
 
     private String systemRole;
     private boolean systemRoleChangeable = true;
     private String question;
     private String reponse;
     private StringBuilder conversation = new StringBuilder();
+    private String texteRequeteJson;
+    private String texteReponseJson;
+    private Boolean debug;
 
     @Inject
     private FacesContext facesContext;
 
-    public ChatBeanHoudaifa() {
+    public chatBeanHoudaifa() {
     }
 
     public String getSystemRole() {
@@ -60,6 +63,34 @@ public class ChatBeanHoudaifa implements Serializable {
 
     public void setConversation(String conversation) {
         this.conversation = new StringBuilder(conversation);
+    }
+
+    public String getTexteRequeteJson() {
+        return texteRequeteJson;
+    }
+
+    public void setTexteRequeteJson(String texteRequeteJson) {
+        this.texteRequeteJson = texteRequeteJson;
+    }
+
+    public String getTexteReponseJson() {
+        return texteReponseJson;
+    }
+
+    public void setTexteReponseJson(String texteReponseJson) {
+        this.texteReponseJson = texteReponseJson;
+    }
+
+    public Boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(Boolean debug) {
+        this.debug = debug;
+    }
+
+    public void toggleDebug() {
+        this.setDebug(!isDebug());
     }
 
     public String envoyer() {
