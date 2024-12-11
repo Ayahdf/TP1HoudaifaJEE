@@ -129,65 +129,7 @@ public class chatBeanHoudaifa implements Serializable {
     }
 
     private void afficherConversation() {
-        this.conversation.append("== User:\n").append(question).append("\n== Serveur:\n").append(reponse).append("\n");
-    }
-
-    private String genererReponseTransformee(String texte) {
-        // Transformation 1 : Palindrome
-        String palindrome = creerPalindrome(texte);
-
-        // Transformation 2 : Compte des lettres
-        int nombreLettres = compterLettres(texte);
-
-        // Transformation 3 : Anagramme
-        String anagramme = genererAnagramme(texte);
-
-        // Construction de la réponse ludique
-        return String.format("""
-            🧩 Transformations ludiques de votre texte :
-            
-            ✨ Palindrome : %s
-            🔤 Nombre de lettres : %d
-            🔀 Anagramme possible : %s
-            
-            Bonus : %s
-            """,
-                palindrome,
-                nombreLettres,
-                anagramme,
-                genererBonusAleatoire()
-        );
-    }
-
-    private String creerPalindrome(String texte) {
-        // Créer un palindrome simplifié
-        String nettoye = texte.replaceAll("[^a-zA-Z]", "").toLowerCase();
-        return nettoye + new StringBuilder(nettoye).reverse();
-    }
-
-    private int compterLettres(String texte) {
-        return texte.replaceAll("[^a-zA-Z]", "").length();
-    }
-
-    private String genererAnagramme(String texte) {
-        // Simplification : prend les premières lettres en ordre inverse
-        String nettoye = texte.replaceAll("[^a-zA-Z]", "").toLowerCase();
-        if (nettoye.length() <= 1) return nettoye;
-
-        char[] lettres = nettoye.toCharArray();
-        Arrays.sort(lettres);
-        return new String(lettres);
-    }
-
-    private String genererBonusAleatoire() {
-        String[] bonus = {
-                "🍀 Chance du jour : Un sourire vous attend !",
-                "🚀 Inspiration : Votre créativité explose aujourd'hui !",
-                "🌈 Pensée positive : Tout est possible !",
-                "🧠 Défi mental : Résolvez un petit puzzle aujourd'hui !",
-                "🌟 Motivation : Vous êtes plus fort que vous ne le pensez !"
-        };
-        return bonus[new Random().nextInt(bonus.length)];
+        this.conversation.append("== User:\n").append(question).append("\n== Poète génératif:\n").append(reponse).append("\n\n");
     }
 
     public List<SelectItem> getSystemRoles() {
@@ -210,9 +152,16 @@ public class chatBeanHoudaifa implements Serializable {
         role = """
                 Your are a travel guide. If the user type the name of a country or of a town,
                 you tell them what are the main places to visit in the country or the town
-                are you tell them the average price of a meal.
+                and you tell them the average price of a meal.
                 """;
         listeSystemRoles.add(new SelectItem(role, "Guide touristique"));
+
+        role = """
+                You are a generative poet. When the user types a question or phrase,
+                you respond with a poetic interpretation of their input.
+                Use rhyme, meter, and creative language to engage the user.
+                """;
+        listeSystemRoles.add(new SelectItem(role, "Poète génératif"));
 
         this.systemRole = (String) listeSystemRoles.getFirst().getValue();
         return listeSystemRoles;
